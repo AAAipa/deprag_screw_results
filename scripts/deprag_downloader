@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+from typing import TypeVar
+from pathlib import Path
+
+import rospy
+
+from deprag_downloader.msg import screwing
+from deprag_downloader.srv import download_request
+from deprag_downloader.downloader import DepragDownloader
+
+T = TypeVar("T")
+
+
+def _get_param(param_name: str, default: T) -> T:
+    closest_param_name = rospy.search_param(param_name)
+    if closest_param_name is None:
+        return default
+    param = rospy.get_param(closest_param_name, default)
+    return param
+
+
+if __name__ == "__main__":
+    rospy.init_node("deprag_downloader")
+
+    download_directory = rospy.get_param(
+        "~download_directory", str(Path.home() / "Downloads" / "TestFolder")
+    )
+    rospy.loginfo(f"Will download into directory '{str(download_directory)}'")
+
+    deprag_ip = _get_param("deprag_ip", "172.10.25.100")
+
+    rospy.loginfo(f"Will look for screwdriver @{deprag_ip}")
+
+    publisher_curves = rospy.Publisher("deprag/curves", screwing, queue_size=10)
+
+    downloader = DepragDownloader(Path(download_directory), deprag_ip, publisher_curves)
+
+    service_download = rospy.Service("deprag/download", download_request, downloader)
+
+    rospy.spin()
