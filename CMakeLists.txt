@@ -21,6 +21,7 @@ add_service_files(
     download_request.srv
 )
 
+catkin_python_setup()
 
 generate_messages(
   DEPENDENCIES
