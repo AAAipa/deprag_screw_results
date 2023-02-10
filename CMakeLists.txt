@@ -9,7 +9,6 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   message_generation
-  cppitasc
 )
 
  add_message_files(
@@ -28,18 +27,11 @@ find_package(catkin REQUIRED COMPONENTS
  )
 
 catkin_package(
-  LIBRARIES deprag_downloader
-  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime  cppitasc
+#  INCLUDE_DIRS include
+#  LIBRARIES deprag_downloader
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 )
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
-)
-
-add_library(${PROJECT_NAME}
-  src/script_download_curve.cpp
-)
-
-target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
 )
