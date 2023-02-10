@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>deprag_downloader</name>
-  <version>0.0.0</version>
+  <version>1.0.0</version>
   <description>The deprag_downloader package</description>
 
   <maintainer email="anwar.alassadi@ipa.fraunhofer.de">Anwar Al Assadi</maintainer>
