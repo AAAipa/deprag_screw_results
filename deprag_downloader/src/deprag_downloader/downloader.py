@@ -37,7 +37,9 @@ class DepragDownloader:
         download_directory = _get_download_directory(
             None if pub else self.download_directory
         )
-        _download_curves(download_directory, self.deprag_ip, data.iTarget)
+        screw_x, screw_y = data.screw_id.split("_")[-2:]
+        file_name = f"screw_{screw_x}_{screw_y}_{data.experiment_id}"
+        _download_curves(download_directory, file_name, self.deprag_ip, data.iTarget)
 
         if pub:
             self._publish(download_directory)
