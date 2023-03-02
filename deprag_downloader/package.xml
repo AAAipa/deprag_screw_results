@@ -15,7 +15,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>rospy</depend>
-  <depend version_gte="1.0.0" version_lt="2.0.0">deprag_msgs</depend>
+  <depend version_gte="2.0.0" version_lt="3.0.0">deprag_msgs</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
