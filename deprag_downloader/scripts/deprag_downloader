@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from typing import TypeVar
 from pathlib import Path
 
 import rospy
 
-from deprag_downloader.msg import screwing
-from deprag_downloader.srv import download_request
+from deprag_msgs.msg import screwing
+from deprag_msgs.srv import download_request
 from deprag_downloader.downloader import DepragDownloader
 
 T = TypeVar("T")

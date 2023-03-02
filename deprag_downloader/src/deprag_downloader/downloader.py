@@ -11,8 +11,8 @@ from deprag_downloader.browser_interaction import (
     download_curves as _download_curves,
     download_fvalues as _download_fvalues,
 )
-from deprag_downloader.msg import screwing
-from deprag_downloader.srv import download_requestRequest, download_requestResponse
+from deprag_msgs.msg import screwing
+from deprag_msgs.srv import download_requestRequest, download_requestResponse
 
 
 def _find_nth(haystack, needle, n):
@@ -37,7 +37,6 @@ class DepragDownloader:
         download_directory = _get_download_directory(
             None if pub else self.download_directory
         )
-
         _download_curves(download_directory, self.deprag_ip, data.iTarget)
 
         if pub:

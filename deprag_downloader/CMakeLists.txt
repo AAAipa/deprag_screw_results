@@ -5,31 +5,14 @@ project(deprag_downloader)
 add_compile_options(-std=c++17)
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
   rospy
-  std_msgs
-  message_generation
-)
-
-add_message_files(
-  FILES
-    screwing.msg
-)
-
-add_service_files(
-  FILES
-    download_request.srv
+  deprag_msgs
 )
 
 catkin_python_setup()
 
-generate_messages(
-  DEPENDENCIES
-    std_msgs
-)
-
 catkin_package(
-  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
+  CATKIN_DEPENDS rospy deprag_msgs
 )
 
 include_directories(

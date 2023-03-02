@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>deprag_downloader</name>
-  <version>1.1.0</version>
-  <description>The deprag_downloader package</description>
+  <name>deprag_screw_results</name>
+  <version>2.0.0</version>
+  <description>The deprag_screw_results package</description>
 
   <maintainer email="anwar.alassadi@ipa.fraunhofer.de">Anwar Al Assadi</maintainer>
 
@@ -14,16 +14,10 @@
   <author email="bab@ipa.fraunhofer.de">Balázs A. Bálint</author>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
-  <depend>rospy</depend>
-  <depend>std_msgs</depend>
-  <build_depend>message_generation</build_depend>
-  <exec_depend>message_runtime</exec_depend>
+  <run_depend version_gte="1.0.0" version_lt="2.0.0">deprag_msgs</run_depend>
+  <run_depend version_gte="2.0.0" version_lt="3.0.0">deprag_downloader</run_depend>
 
-
-  <!-- The export tag contains other, unspecified, tags -->
   <export>
-    <!-- Other tools can request additional information be placed here -->
-
+    <metapackage/>
   </export>
 </package>
