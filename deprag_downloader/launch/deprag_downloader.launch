@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="deprag_downloader" pkg="deprag_downloader" type="deprag_downloader">
+        <param name="download_directory" value="/home/ipa325/Downloads/test_deprag_downloads"/>
+    </node>
+</launch>

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>deprag_downloader</name>
+  <version>2.0.0</version>
+  <description>The deprag_downloader package</description>
+
+  <maintainer email="anwar.alassadi@ipa.fraunhofer.de">Anwar Al Assadi</maintainer>
+
+  <license>BSD</license>
+
+  <url type="repository">https://github.com/AAAipa/deprag_screw_results</url>
+
+  <author email="anwar.alassadi@ipa.fraunhofer.de">Anwar Al Assadi</author>
+  <author email="bab@ipa.fraunhofer.de">Balázs A. Bálint</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>rospy</depend>
+  <depend version_gte="1.0.0" version_lt="2.0.0">deprag_msgs</depend>
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>
