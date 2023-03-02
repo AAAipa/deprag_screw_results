@@ -14,7 +14,7 @@
   <author email="bab@ipa.fraunhofer.de">Balázs A. Bálint</author>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <exec_depend version_gte="1.0.0" version_lt="2.0.0">deprag_msgs</exec_depend>
+  <exec_depend version_gte="2.0.0" version_lt="3.0.0">deprag_msgs</exec_depend>
   <exec_depend version_gte="2.0.0" version_lt="3.0.0">deprag_downloader</exec_depend>
 
   <export>
