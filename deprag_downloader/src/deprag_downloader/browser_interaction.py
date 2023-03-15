@@ -1,6 +1,10 @@
 from functools import lru_cache
 from pathlib import Path
-import time
+from datetime import datetime
+import requests
+from html.parser import HTMLParser
+from typing import List, Tuple, Union
+
 
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
@@ -23,44 +27,102 @@ def _get_browser_options(download_directory: Path) -> Options:
     return opts
 
 
-def download_curves(download_directory: Path, file_name: str, deprag_ip: str, target: int, wait_time: int = 60) -> None:
-    with Firefox(options=_get_browser_options(download_directory)) as browser:
-        browser.get(
-            "http://"
-            + deprag_ip
-            + "/cgi-bin/cgiread?site=-&request=curves&args=&mode=-1-"
-        )
+class _DepragCurveDataGetter(HTMLParser):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.current_curve_specs: Union[List[str], None] = None
+        self.curve_specs: List[Tuple[str, str]] = []
 
-        dropdown = browser.find_element(By.CLASS_NAME, "dd-selected")
-        dropdown.click()
-        choice = browser.find_elements(By.CLASS_NAME, "dd-option")
-        choice[1].click()
-        downloads = browser.find_elements(By.CLASS_NAME, "download")
-        downloads[target].click()
-        
-        # The magic below is based on the answer here: https://stackoverflow.com/a/56570364
-        # Open the downloads window in the browser
-        browser.execute_script("window.open()")
-        WebDriverWait(browser,10).until(EC.new_window_is_opened)
-        browser.switch_to.window(browser.window_handles[-1])
-        browser.get("about:downloads")
-        
-        # Poll for the download to complete -- but it should be completed already, though?
-        endTime = time.time() + wait_time
-        while True:
-            try:
-                downloaded_file_name = browser.execute_script("return document.querySelector('#contentAreaDownloadsView .downloadMainArea .downloadContainer description:nth-of-type(1)').value")
-                if downloaded_file_name:
-                    break
-            except Exception as e:
-                print(e)
-            time.sleep(1)
-            if time.time() > endTime:
-                break
-    
-    # Rename the downloaded file
-    file_path = Path(download_directory / downloaded_file_name)
-    file_path.rename(file_path.parent / f"{file_name}{file_path.suffix}")
+    def handle_starttag(self, tag, attrs):
+        if tag != "a":
+            return
+        attrib = {attrib: value for attrib, value in attrs}
+        if attrib.get("class", "") != "download":
+            return
+        assert (
+            self.current_curve_specs is None
+        ), f"Abandoned curve specs: {self.current_curve_specs}"
+        self.current_curve_specs = [attrib["href"]]
+
+    def handle_endtag(self, tag):
+        if tag != "a":
+            return
+        if self.current_curve_specs is not None:
+            self.curve_specs = self.curve_specs + [self.current_curve_specs]
+            self.current_curve_specs = None
+
+    def handle_data(self, data):
+        if self.current_curve_specs is not None:
+            self.current_curve_specs = self.current_curve_specs + [data]
+
+
+def _get_timestamp(graph_name: str) -> datetime:
+    graph_name_elements = graph_name.split("_")
+    if len(graph_name_elements) == 1:
+        return datetime.now()
+    _, date, time = graph_name_elements
+    year, month, day = date.split("-")
+    hour, minute, second = time.split(":")
+    return datetime(
+        year=int(year),
+        month=int(month),
+        day=int(day),
+        hour=int(hour),
+        minute=int(minute),
+        second=int(second),
+    )
+
+
+def _get_filename(graph_link: str) -> str:
+    elements = graph_link.split("'")
+    assert len(elements) == 3, str(elements)
+    return elements[1]
+
+
+def current_curves(deprag_ip: str):
+    url = f"http://{deprag_ip}/cgi-bin/cgiread"
+    data = {
+        "site": "-",
+        "request": "curves",
+        "args": "",
+        "mode": "2-",
+    }
+    response = requests.post(url, data=data)
+
+    parser = _DepragCurveDataGetter()
+    parser.feed(response.text)
+
+    curves = [
+        (_get_timestamp(graph_name), _get_filename(graph_link))
+        for graph_link, graph_name in parser.curve_specs
+    ]
+
+    return curves
+
+
+def download_curves(
+    download_directory: Path,
+    file_name: str,
+    deprag_ip: str,
+    target: int,
+    wait_time: int = 60,
+) -> None:
+    curves = current_curves(deprag_ip=deprag_ip)
+    _, dlfile = curves[target]
+
+    url = f"http://{deprag_ip}/cgi-bin/cgiread"
+    data = {
+        "site": "curves",
+        "dltype": "csv",
+        "dlfile": dlfile,
+        "action": "download",
+    }
+    response = requests.post(url, data=data, stream=True)
+
+    with open(download_directory / f'{file_name}.{data["dltype"]}', "w") as file_stream:
+        for line in response.iter_lines(decode_unicode=True):
+            file_stream.write(line)
+            file_stream.write("\n")
 
 
 def download_fvalues(download_directory: Path, deprag_ip: str) -> None:
