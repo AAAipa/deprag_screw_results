@@ -43,7 +43,7 @@ class DepragDownloader:
 
         if pub:
             self._publish(download_directory)
-        
+
         return download_requestResponse()
 
     def _publish(self, download_directory: Path) -> None:
