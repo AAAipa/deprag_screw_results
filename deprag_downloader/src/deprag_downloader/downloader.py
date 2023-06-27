@@ -57,7 +57,6 @@ class DepragDownloader:
         return download_requestResponse()
 
     def _publish(self, download_directory: Path) -> None:
-
         curve_file = next(download_directory.iterdir())
 
         rospy.logdebug(f'Publishing curve "{curve_file.stem}"...')
