@@ -1,5 +1,6 @@
 from pathlib import Path
 from time import time
+from multiprocessing import Process
 
 import rospy
 import requests as requester
@@ -30,6 +31,7 @@ class DepragDownloader:
         self.download_directory = download_directory
         self.deprag_ip = deprag_ip
         self.publisher = curve_publisher
+        self.download_process = None
 
     def __call__(self, data: download_requestRequest) -> download_requestResponse:
         pub = data.iTarget < 0
@@ -39,9 +41,17 @@ class DepragDownloader:
         )
         screw_x, screw_y = data.screw_id.split("_")[-2:]
         file_name = f"screw_{screw_x}_{screw_y}_{data.experiment_id}"
-        _download_curves(download_directory, file_name, self.deprag_ip, data.iTarget)
+
+        while self.download_process is not None and self.download_process.is_alive():
+            rospy.sleep(0.1)
+        self.download_process = Process(
+            target=_download_curves,
+            args=(download_directory, file_name, self.deprag_ip, data.iTarget),
+        )
+        self.download_process.start()
 
         if pub:
+            self.download_process.join()
             self._publish(download_directory)
 
         return download_requestResponse()
