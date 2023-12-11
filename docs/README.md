@@ -1,4 +1,4 @@
-# Documenting demprag_screw_results
+# Documenting deprag_screw_results
 
 ## Changelog generation
 
